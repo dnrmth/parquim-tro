@@ -13,14 +13,11 @@ services:
     image: postgres:latest
     container_name: inspector
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: fiscaldb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=inspectordb
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - "5433:5432"
 
 volumes:
   mongo-data:
-  postgres-data:
