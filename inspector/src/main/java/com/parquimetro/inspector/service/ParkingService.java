@@ -29,7 +29,7 @@ public class ParkingService {
 
     @Transactional
     public TrafficTicketVehicleDto consultVehicle(ConsultVehicleDto consultVehicleDto) {
-        Optional<ParkingEntity> parkingEntity = parkingRepository.findByPlate(consultVehicleDto.plate());
+        Optional<ParkingEntity> parkingEntity = parkingRepository.findFirstByPlateOrderByFinalDateTimeDesc(consultVehicleDto.plate());
         if (parkingEntity.isEmpty()) {
             throw new ParkingException("Veículo não encontrado");
         }

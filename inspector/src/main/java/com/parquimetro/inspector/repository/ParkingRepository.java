@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ParkingRepository extends JpaRepository<ParkingEntity, Long> {
 
-    Optional<ParkingEntity> findByPlate(String plate);
+    Optional<ParkingEntity> findFirstByPlateOrderByFinalDateTimeDesc(String plate);
 }
