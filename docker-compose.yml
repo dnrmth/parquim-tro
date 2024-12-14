@@ -1,13 +1,26 @@
 version: '3.8'
 
 services:
-  mongo:
+  vehicle:
     image: mongo:latest
-    container_name: mongodb
+    container_name: vehicle
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
+  inspector:
+    image: postgres:latest
+    container_name: inspector
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fiscaldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
 volumes:
   mongo-data:
+  postgres-data:
