@@ -20,6 +20,7 @@ public class ParkingController {
         this.parkingService = parkingService;
     }
 
+
     @PostMapping
     public ResponseEntity<Long> saveVehicleParking(@RequestBody VehicleDto vehicleDto) {
         return ResponseEntity.ok(parkingService.saveVehicleParking(vehicleDto));

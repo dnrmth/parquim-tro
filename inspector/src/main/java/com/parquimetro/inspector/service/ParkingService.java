@@ -1,6 +1,8 @@
 package com.parquimetro.inspector.service;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.parquimetro.inspector.controller.dto.ConsultVehicleDto;
+import com.parquimetro.inspector.controller.dto.TrafficTicketVehicleDto;
 import com.parquimetro.inspector.controller.dto.VehicleDto;
 import com.parquimetro.inspector.data.ParkingEntity;
 import com.parquimetro.inspector.exception.ParkingException;
@@ -9,17 +11,35 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ParkingService {
 
     private final ParkingRepository parkingRepository;
+    private final MockDetranService mockDetranService;
 
     @Autowired
-    public ParkingService(ParkingRepository parkingRepository) {
+    public ParkingService(ParkingRepository parkingRepository,
+                          MockDetranService mockDetranService) {
         this.parkingRepository = parkingRepository;
+        this.mockDetranService = mockDetranService;
+    }
+
+    @Transactional
+    public TrafficTicketVehicleDto consultVehicle(ConsultVehicleDto consultVehicleDto) {
+        Optional<ParkingEntity> parkingEntity = parkingRepository.findFirstByPlateOrderByFinalDateTimeDesc(consultVehicleDto.plate());
+        if (parkingEntity.isEmpty()) {
+            throw new ParkingException("Veículo não encontrado");
+        }
+
+        ParkingEntity parking = parkingEntity.get();
+        if (parking.getFinalDateTime().isBefore(LocalDateTime.now())) {
+            double finePrice = mockDetranService.applyTrafficTicket(parking.getPlate());
+            return new TrafficTicketVehicleDto(parking.getPlate(), finePrice, parking.getFinalDateTime());
+        }
+        return new TrafficTicketVehicleDto(parking.getPlate(), 0, parking.getFinalDateTime());
     }
 
     @Transactional
