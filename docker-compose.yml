@@ -19,5 +19,11 @@ services:
     ports:
       - "5433:5432"
 
+  inspector-app:
+    image: anagenova/inspector
+    container_name: inspector-app
+    ports:
+      - "8081:8081"
+
 volumes:
   mongo-data:
