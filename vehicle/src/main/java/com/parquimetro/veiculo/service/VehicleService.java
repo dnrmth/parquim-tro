@@ -81,6 +81,10 @@ public class VehicleService {
 
         vehicle.getPayments().add(payment);
 
+        VehicleDto vehicleDto = new VehicleDto(additionalHoursRegisterDTO.plate(), vehicle.getEntryTime(),
+                LocalDateTime.now());
+        parquimeterClient.sendParkingInformationToSave(vehicleDto);
+
         vehicleRepository.save(vehicle);
 
         return new AdditionalPaymentDTO(additionalHours, payment.getPaymentAmount());
