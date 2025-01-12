@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.parquimetro.veiculo.client.ParquimeterClient;
 import com.parquimetro.veiculo.dto.VehicleDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -14,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class ParquimeterClientImpl implements ParquimeterClient {
+
+    @Value("${parking.url}")
+    private String parkingUrl;
 
     public void sendParkingInformationToSave(VehicleDto vehicleDto) {
         try {
@@ -27,14 +31,14 @@ public class ParquimeterClientImpl implements ParquimeterClient {
             String vehicleDtoAsString = objectMapper.writeValueAsString(vehicleDto);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8081/parking"))
+                    .uri(new URI(parkingUrl))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(vehicleDtoAsString, StandardCharsets.UTF_8))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
-            throw new RuntimeException("Não foi possível fazer a requisição");
+            throw new RuntimeException("Não foi possível fazer a requisição", e);
         }
     }
 
